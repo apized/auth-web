@@ -15,7 +15,7 @@ import SocialLogin from "./components/SocialLogin";
 
 declare global {
   interface Window {
-    _env_: { [key: string]: string }
+    _env_: { AUTH_SERVER_URL: string }
   }
 }
 
