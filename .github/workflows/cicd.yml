@@ -24,4 +24,4 @@ jobs:
         run: |
           VERSION=$(cat package.json | grep '"version": ".*"' | sed -e 's/.*"\(.*\)",/\1/')
           docker build . --tag ghcr.io/apized/auth-web:$VERSION
-          docker push
+          docker push ghcr.io/apized/auth-web:$VERSION
