@@ -11,7 +11,7 @@ const SocialLogin = () => {
       queryParams[split[0]] = split[1]
     });
   const { loading } = useApiGet(Apis.Auth.OauthLogin, {}, { id: `${slug}?code=${queryParams.code}` });
-  if (!loading) {
+  if (queryParams.code && !loading) {
     window.close();
   }
   return <></>;
