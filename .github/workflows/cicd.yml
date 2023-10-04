@@ -1,5 +1,10 @@
 name: CI/CD
 on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '*.*.*'
   create:
     branches:
       - main
@@ -23,5 +28,8 @@ jobs:
       - name: Publish docker
         run: |
           VERSION=$(cat package.json | grep '"version": ".*"' | sed -e 's/.*"\(.*\)",/\1/')
+          if [ $GITHUB_REF_TYPE -eq "" ]; then
+            VERSION="$VERSION-$(git rev-parse --short HEAD)"
+          fi
           docker build . --tag ghcr.io/apized/auth-web:$VERSION
           docker push ghcr.io/apized/auth-web:$VERSION
