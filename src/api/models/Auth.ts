@@ -1,5 +1,13 @@
 import { Model } from './Base';
 
+export enum OauthProvider {
+  Google = "Google",
+  Facebook = "Facebook",
+  GitHub = "GitHub",
+  Slack = "Slack",
+  LinkedIn = "LinkedIn"
+}
+
 type Permissionable = {
   description?: string;
   permissions?: string[];
@@ -19,4 +27,13 @@ export type AuthRole = Permissionable & {
 export type LoginRequest = {
   username: string;
   password: string;
+} & Model;
+
+export type AuthOauth = {
+  name?: string;
+  slug?: string;
+  provider?: OauthProvider;
+  clientId?: string;
+  clientSecret?: string;
+  loginUrl?: string;
 } & Model;

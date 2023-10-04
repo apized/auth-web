@@ -1,5 +1,6 @@
 import { ApizedAuditEntry, ApizedDefinition, Service } from './Api';
-import { AuthRole, AuthUser, LoginRequest } from "./models/Auth";
+import { AuthOauth, AuthRole, AuthUser, LoginRequest } from "./models/Auth";
+import { Model } from "./models/Base";
 
 export const Apis = {
   Auth: {
@@ -22,6 +23,14 @@ export const Apis = {
     Login: {
       path: '/tokens',
       service: Service.Auth,
-    } as ApizedDefinition<LoginRequest>
+    } as ApizedDefinition<LoginRequest>,
+    OauthLogin: {
+      path: '/tokens/oauth',
+      service: Service.Auth,
+    } as ApizedDefinition<Model>,
+    Oauth: {
+      path: '/oauths',
+      service: Service.Auth,
+    } as ApizedDefinition<AuthOauth>
   },
 };

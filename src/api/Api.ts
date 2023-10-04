@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUser } from './models/Auth';
 import { Model, UUID } from './models/Base';
-import { SearchTerm, SortTerm } from './Search';
+import { SearchTerm, SortDirection, SortTerm } from './Search';
 import { EventBus } from "../lib/bus/EventBus";
 
 const eventBus = new EventBus();
 
 export const serviceRegistry: { [key: string]: string } = {
-  auth: 'http://auth.lvh.me:8081',
+  auth: window._env_.AUTH_API || 'https://auth-server.serveo.net',
 };
 
 export enum Service {
@@ -206,7 +206,12 @@ const apiFor = <T extends Model>(
     }
 
     if (sort) {
-      params.sort = encodeURIComponent(JSON.stringify(sort));
+      params.sort = sort
+        .map(
+          (t) =>
+            `${t.field?.trim()}${t.direction === SortDirection.Asc ? '>' : '<'}`,
+        )
+        .join(',');
     }
 
     if (Object.keys(params).length) {
