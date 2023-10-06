@@ -15,6 +15,7 @@ import SocialLogin from "./components/SocialLogin";
 
 declare global {
   interface Window {
+    ApplePaySession: any
     _env_: { AUTH_SERVER_URL: string }
   }
 }
@@ -26,15 +27,15 @@ const App = () => {
     ? <SocialLogin/>
     : <UserContextProvider>
       <SnackbarProvider anchorOrigin={{ horizontal: 'center', vertical: "bottom" }}>
-        <Container>
-          <Stack spacing={"1em"}>
-            <HashRouter>
-              <MainNavigation routes={[
-                { path: "/users", description: "Users" },
-                { path: "/roles", description: "Roles" },
-                { path: "/oauths", description: "Oauth" },
-              ]}/>
-              <Box>
+        <Stack spacing={"1em"}>
+          <HashRouter>
+            <MainNavigation routes={[
+              { path: "/users", description: "Users" },
+              { path: "/roles", description: "Roles" },
+              { path: "/oauths", description: "Oauth" },
+            ]}/>
+            <Box>
+              <Container>
                 <Routes>
                   <Route path={"/auth/login/:slug"} element={<SocialLogin/>}/>
                   <Route path={"/users"} element={<UsersPage/>}/>
@@ -45,10 +46,10 @@ const App = () => {
                   <Route path={"/oauths/:id"} element={<OauthPage/>}/>
                   <Route path="*" element={<Navigate to="/users" replace/>}/>
                 </Routes>
-              </Box>
-            </HashRouter>
-          </Stack>
-        </Container>
+              </Container>
+            </Box>
+          </HashRouter>
+        </Stack>
       </SnackbarProvider>
     </UserContextProvider>;
 }

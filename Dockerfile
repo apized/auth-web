@@ -3,8 +3,10 @@ ENV NODE_ENV production
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
+COPY tsconfig.json .
+COPY src ./src
+COPY public ./public
 RUN npm install
-COPY . .
 RUN npm run build
 
 FROM nginx

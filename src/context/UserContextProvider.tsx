@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useMemo } from 'react';
 
 import UserContext from './UserContext';
@@ -20,29 +21,21 @@ const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
     return user?.username?.startsWith('anonymous@') ? new User(user) : undefined;
   }, [ eventBus, user ]);
 
-  useEffect(() => {
-    return eventBus.effect('user-refetch', () => {
-      try {
-        refetch()
-      } catch {
-        eventBus.dispatch('login-requested')
-      }
-    });
-  }, [ eventBus, refetch ]);
-
-  useEffect(() => {
-    return eventBus.effect('logout-success', refetch);
-  }, [ eventBus, refetch ]);
-
-  useEffect(() => {
-    return eventBus.effect('login-success', () => {
-      try {
-        refetch()
-      } catch {
-        eventBus.dispatch('login-requested')
-      }
-    });
-  }, [ eventBus, refetch ]);
+  useEffect(() =>eventBus.effect('user-refetch', () => {
+    try {
+      refetch()
+    } catch {
+      eventBus.dispatch('login-requested')
+    }
+  }), [ eventBus, refetch ]);
+  useEffect(() =>eventBus.effect('logout-success', refetch), [ eventBus, refetch ]);
+  useEffect(() =>eventBus.effect('login-success', () => {
+    try {
+      refetch()
+    } catch {
+      eventBus.dispatch('login-requested')
+    }
+  }), [ eventBus, refetch ]);
 
   return (
     <UserContext.Provider value={ProviderValues}>

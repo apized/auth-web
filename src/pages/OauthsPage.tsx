@@ -16,7 +16,6 @@ const OauthsPage = () => {
   const snackbar = useSnackbar();
 
   const [ open, setOpen ] = useState(false);
-  const [ refresh, setRefresh ] = useState(1);
 
   const oauthApi = apiFor(Apis.Auth.Oauth, {});
 
@@ -66,7 +65,7 @@ const OauthsPage = () => {
       <ApizedListPage<AuthOauth>
         columns={[
           { label: 'Name', minWidth: 170, format: (value) => value.name },
-          { label: 'Name', minWidth: 100, format: (value) => value.slug },
+          { label: 'Slug', minWidth: 100, format: (value) => value.slug },
           {
             label: '',
             minWidth: 10,
@@ -77,7 +76,7 @@ const OauthsPage = () => {
                 oauthApi.remove({ id: role.id! })
                   .then(() => {
                     snackbar.enqueueSnackbar(`Oauth ${role.name} deleted.`, { variant: "success" })
-                    setRefresh(new Date().getTime())
+                    //todo setRefresh(new Date().getTime())
                   })
                   .catch((e: ApiError) => {
                     e.errors.map((error) => snackbar.enqueueSnackbar(error.message, { variant: "error" }))

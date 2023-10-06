@@ -77,9 +77,7 @@ const ApiModelListPage = <T extends Model>({
 
   const entries: T[] = results?.content || [];
 
-  useEffect(() => {
-    return eventBus.effect('login-success', refetch);
-  }, [ eventBus, refetch ]);
+  useEffect(() =>eventBus.effect('login-success', refetch), [ eventBus, refetch ]);
 
   if (!loading && !entries.length) {
     eventBus.dispatch('user-refetch');

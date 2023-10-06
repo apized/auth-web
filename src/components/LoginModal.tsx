@@ -2,10 +2,11 @@ import { useFormik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 import { Box, Button, CircularProgress, Dialog, ModalProps, Stack, Tab, Tabs, TextField } from "@mui/material";
-import apiFor from "../api/Api";
+import apiFor, { serviceRegistry } from "../api/Api";
 import { Apis } from "../api/Config";
 import { useEventBus } from "../lib/bus/EventBus";
 import { useApiList } from "../api/ApiHooks";
+import { OauthProvider } from "../api/models/Auth";
 
 export type ApizedModalProps = Pick<ModalProps, 'open' | 'onClose'>;
 
@@ -47,25 +48,32 @@ const LoginModal = ({
               <Tab label="Social"/>
               <Tab label="Email / Password"/>
             </Tabs>
-            <Box sx={{ width: "22em" }}>
+            <Box sx={{ width: "20em" }}>
               {value === 0
-                ? <Stack padding={"1em"}>
+                ? <Stack padding={"1em"} spacing={"1em"}>
                   {oauthPage.content.map(o => (
                     <Button
                       key={o.id}
                       variant={"contained"}
                       onClick={() => {
-                        const win = window.open(
-                          `${o.loginUrl}&redirect_uri=https://${window.location.hostname}/auth/login/${o.slug}`,
-                          '_system',
-                          'resizable=yes; status=no; scroll=no; help=no; center=yes; width=800; height=600; menubar=no; directories=no; location=no; modal=yes;',
-                        );
-                        const timer = setInterval(() => {
-                          if (!win || win.closed) {
-                            clearInterval(timer);
-                            eventBus.dispatch("login-success");
-                          }
-                        }, 1000);
+                        const redirect = o.provider === OauthProvider.Apple
+                          ? `${serviceRegistry.auth}/tokens/oauth/apple`
+                          : `https://${window.location.hostname}/auth/login/${o.slug}`
+                        if (o.provider === OauthProvider.Apple && window.ApplePaySession) {
+                          window.location.href = `${o.loginUrl}&redirect_uri=${redirect}`;
+                        } else {
+                          const win = window.open(
+                            `${o.loginUrl}&redirect_uri=${redirect}`,
+                            '_system',
+                            'resizable=yes; status=no; scroll=no; help=no; center=yes; width=800; height=600; menubar=no; directories=no; location=no; modal=yes;',
+                          );
+                          const timer = setInterval(() => {
+                            if (!win || win.closed) {
+                              clearInterval(timer);
+                              eventBus.dispatch("login-success");
+                            }
+                          }, 1000);
+                        }
                       }}
                     >
                       {o.name}
@@ -103,10 +111,10 @@ const LoginModal = ({
                              justifyContent="left"
                              alignItems="baseline"
                              spacing={2}>
-                        <Button variant={"contained"} disabled={!formik.isValid} type="submit">
-                          Sign in
+                        <Button variant={"contained"} disabled={!formik.isValid} type="submit" sx={{fontSize:"0.75em"}}>
+                          Login
                         </Button>
-                        <Button variant={"outlined"} disabled={!formik.isValid}>Sign up</Button>
+                        <Button variant={"outlined"} disabled={!formik.isValid} sx={{fontSize:"0.75em"}}>Register</Button>
                         <div style={{ textAlign: 'right' }}>
                           <Button variant={"text"} style={{ fontSize: '0.5em' }} type="button">
                             forgot password?

@@ -2,6 +2,7 @@ import { Model } from './Base';
 
 export enum OauthProvider {
   Google = "Google",
+  Apple = "Apple",
   Facebook = "Facebook",
   GitHub = "GitHub",
   Slack = "Slack",

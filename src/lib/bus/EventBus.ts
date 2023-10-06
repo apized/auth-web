@@ -24,7 +24,7 @@ export class EventBus {
     return this.map[event];
   }
 
-  effect(event: string, listener: (event: MessageEvent<any>) => any) {
+  effect(event: string, listener: (event: MessageEvent<any>) => void): () => void {
     this.on(event, listener);
     return () => this.remove(event, listener);
   }

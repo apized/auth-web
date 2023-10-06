@@ -16,7 +16,6 @@ const RolesPage = () => {
   const snackbar = useSnackbar();
 
   const [ open, setOpen ] = useState(false);
-  const [ refresh, setRefresh ] = useState(0);
 
   const roleApi = apiFor(Apis.Auth.Role, {});
 
@@ -59,7 +58,7 @@ const RolesPage = () => {
                 roleApi.remove({ id: role.id! })
                   .then(() => {
                     snackbar.enqueueSnackbar(`Role ${role.name} deleted.`, { variant: "success" })
-                    setRefresh(new Date().getTime())
+                    //todo setRefresh(new Date().getTime())
                   })
                   .catch((e: ApiError) => {
                     e.errors.map((error) => snackbar.enqueueSnackbar(error.message, { variant: "error" }))

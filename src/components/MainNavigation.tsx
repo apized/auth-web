@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Logo from '../atoms/Logo';
 import React, { useEffect, useState } from 'react';
 import { useAuthContext } from "../context/UserContext";
@@ -35,29 +36,15 @@ const MainNavigation = ({ routes }: { routes: Route[] }) => {
   const logout = apiFor(Apis.Auth.Login, {}).remove;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    eventBus.effect('login-requested', () => {
-      setOpen(true);
-    });
-  }, [ eventBus, setOpen ]);
+  useEffect(() => eventBus.effect('login-requested', () => setOpen(true)), [ eventBus ]);
 
-  useEffect(() => {
-    eventBus.effect('login-success', () => {
-      setOpen(false);
-    });
-  }, [ eventBus, setOpen ]);
+  useEffect(() => eventBus.effect('login-success', () => setOpen(false)), [ eventBus ]);
 
-  useEffect(() => {
-    eventBus.effect('logout-requested', () => {
-      logout({ id: '' }).then(() => eventBus.dispatch('logout-success'));
-    });
-  }, [ eventBus, logout, setOpen ]);
+  useEffect(() => eventBus.effect('logout-requested', () => {
+    logout({ id: '' }).then(() => eventBus.dispatch('logout-success'));
+  }), [ eventBus, logout ]);
 
-  useEffect(() => {
-    eventBus.effect('logout-success', () => {
-      setOpen(true);
-    });
-  }, [ eventBus, logout, setOpen ]);
+  useEffect(() => eventBus.effect('logout-success', () => setOpen(true)), [ eventBus ]);
 
   const [ anchorElUser, setAnchorElUser ] = React.useState<null | HTMLElement>(null);
 
@@ -72,7 +59,7 @@ const MainNavigation = ({ routes }: { routes: Route[] }) => {
   return (
     <>
       <AppBar position="static">
-        <Container maxWidth="xl">
+        <Container>
           <Toolbar disableGutters>
             <Box sx={{ display: 'flex', mr: 1 }}>
               <Logo/>

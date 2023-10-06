@@ -120,7 +120,9 @@ const OauthForm = (
         <TextField
           fullWidth
           required
-          label="Client Secret"
+          multiline={formik.values.provider === OauthProvider.Apple}
+          minRows={formik.values.provider === OauthProvider.Apple ? 3 : 1}
+          label={formik.values.provider === OauthProvider.Apple ? "Private Key" : "Client Secret"}
           name="clientSecret"
           type="text"
           value={formik.values.clientSecret}
