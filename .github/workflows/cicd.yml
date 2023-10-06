@@ -28,7 +28,7 @@ jobs:
       - name: Publish docker
         run: |
           VERSION=$(cat package.json | grep '"version": ".*"' | sed -e 's/.*"\(.*\)",/\1/')
-          if [ "$GITHUB_REF_TYPE" == "" ]; then
+          if [ "$GITHUB_REF_TYPE" == "branch" ]; then
             VERSION="$VERSION-$(git rev-parse --short HEAD)"
           fi
           docker build . --tag ghcr.io/apized/auth-web:$VERSION
