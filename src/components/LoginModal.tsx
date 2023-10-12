@@ -48,7 +48,7 @@ const LoginModal = ({
               <Tab label="Social"/>
               <Tab label="Email / Password"/>
             </Tabs>
-            <Box sx={{ width: "20em" }}>
+            <Box sx={{ width: "22em" }}>
               {value === 0
                 ? <Stack padding={"1em"} spacing={"1em"}>
                   {oauthPage.content.map(o => (
