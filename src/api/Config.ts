@@ -1,5 +1,5 @@
 import { ApizedAuditEntry, ApizedDefinition, Service } from './Api';
-import { AuthOauth, AuthRole, AuthUser, LoginRequest } from "./models/Auth";
+import { AuthOauth, AuthRole, AuthToken, AuthUser, LoginRequest } from "./models/Auth";
 import { Model } from "./models/Base";
 
 export const Apis = {
@@ -16,6 +16,14 @@ export const Apis = {
       path: '/users',
       service: Service.Auth,
     } as ApizedDefinition<AuthUser>,
+    NonExpiringToken: {
+      path: '/tokens/[user]?expiring=false',
+      service: Service.Auth,
+    } as ApizedDefinition<AuthToken>,
+    ExpiringToken: {
+      path: '/tokens/[user]?expiring=true',
+      service: Service.Auth,
+    } as ApizedDefinition<AuthToken>,
     Role: {
       path: '/roles',
       service: Service.Auth,

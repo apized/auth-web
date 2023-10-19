@@ -18,18 +18,18 @@ const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
     if (user?.username?.startsWith('anonymous@')) {
       eventBus.dispatch('login-requested');
     }
-    return user?.username?.startsWith('anonymous@') ? new User(user) : undefined;
+    return user?.username?.startsWith('anonymous@') ? undefined : new User(user);
   }, [ eventBus, user ]);
 
-  useEffect(() =>eventBus.effect('user-refetch', () => {
+  useEffect(() => eventBus.effect('user-refetch', () => {
     try {
       refetch()
     } catch {
       eventBus.dispatch('login-requested')
     }
   }), [ eventBus, refetch ]);
-  useEffect(() =>eventBus.effect('logout-success', refetch), [ eventBus, refetch ]);
-  useEffect(() =>eventBus.effect('login-success', () => {
+  useEffect(() => eventBus.effect('logout-success', refetch), [ eventBus, refetch ]);
+  useEffect(() => eventBus.effect('login-success', () => {
     try {
       refetch()
     } catch {

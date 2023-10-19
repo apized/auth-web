@@ -31,7 +31,9 @@ const UserPage = () => {
     }
   )
   const loading = loadingUser || loadingRoles;
-  const userApi = apiFor(Apis.Auth.User, {});
+  const userApi = apiFor(Apis.Auth.User);
+  const expiringTokenApi = apiFor(Apis.Auth.ExpiringToken, { user: { id } });
+  const nonExpiringtokenApi = apiFor(Apis.Auth.NonExpiringToken, { user: { id } });
 
   const addRole = (role: AuthRole) => {
     const roles = (user.roles! as string[]).concat(role.id!)
@@ -120,45 +122,59 @@ const UserPage = () => {
           <BorderedSection title={"Roles"}>
             <Stack direction={"row"} flexWrap={"wrap"}>
               {roles && roles.content?.map((r) => (
-                  <Box key={r.id} margin={"0.25em"}>
-                    {(user?.roles as string[] || []).indexOf(r.id || '') === -1
-                      ? (
-                        <GreyBadge
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => addRole(r)}
-                        >
-                          {r.name}
-                          &nbsp;
-                          <IosShare
-                            style={{ fontSize: "1.5em" }}
-                            color={"primary"}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/roles/${r.id}`);
-                            }}
-                          />
-                        </GreyBadge>
-                      )
-                      : (
-                        <GreenBadge
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => removeRole(r)}
-                        >
-                          {r.name}
-                          &nbsp;
-                          <IosShare
-                            style={{ fontSize: "1.5em" }}
-                            color={"primary"}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/roles/${r.id}`);
-                            }}
-                          />
-                        </GreenBadge>
-                      )
-                    }
-                  </Box>
-                ))}
+                <Box key={r.id} margin={"0.25em"}>
+                  {(user?.roles as string[] || []).indexOf(r.id || '') === -1
+                    ? (
+                      <GreyBadge
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => addRole(r)}
+                      >
+                        {r.name}
+                        &nbsp;
+                        <IosShare
+                          style={{ fontSize: "1.5em" }}
+                          color={"primary"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/roles/${r.id}`);
+                          }}
+                        />
+                      </GreyBadge>
+                    )
+                    : (
+                      <GreenBadge
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => removeRole(r)}
+                      >
+                        {r.name}
+                        &nbsp;
+                        <IosShare
+                          style={{ fontSize: "1.5em" }}
+                          color={"primary"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/roles/${r.id}`);
+                          }}
+                        />
+                      </GreenBadge>
+                    )
+                  }
+                </Box>
+              ))}
+            </Stack>
+          </BorderedSection>
+          <BorderedSection title={"Generate Tokens"}>
+            <Stack direction={"row"} spacing={"1em"} justifyContent={"center"}>
+              <Button variant={"contained"} onClick={() =>
+                expiringTokenApi.create({ obj: {} }).then((token) => {
+                  window.prompt("Token", token.jwt);
+                })
+              }>Expiring</Button>
+              <Button variant={"contained"} onClick={() =>
+                nonExpiringtokenApi.create({ obj: {}, }).then((token) => {
+                  window.prompt("Token", token.jwt);
+                })
+              }>Non-Expiring</Button>
             </Stack>
           </BorderedSection>
         </>

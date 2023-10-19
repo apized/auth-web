@@ -3,6 +3,7 @@ import { Model } from './Base';
 export enum OauthProvider {
   Google = "Google",
   Apple = "Apple",
+  Microsoft = "Microsoft",
   Facebook = "Facebook",
   GitHub = "GitHub",
   Slack = "Slack",
@@ -38,3 +39,7 @@ export type AuthOauth = {
   clientSecret?: string;
   loginUrl?: string;
 } & Model;
+
+export type AuthToken = {
+  jwt?: string;
+} & Model

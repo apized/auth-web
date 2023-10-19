@@ -145,7 +145,7 @@ const errorHandler = (
 
 const apiFor = <T extends Model>(
   type: ApizedDefinition<T>,
-  context: ApizedContext,
+  context: ApizedContext = {},
 ): Api<T> => {
   const server = serviceRegistry[type.service.valueOf()];
 
