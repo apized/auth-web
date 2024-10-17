@@ -1,7 +1,6 @@
-import { useApiGet } from "../api/ApiHooks";
 import { Apis } from "../api/Config";
 import apiFor from "../api/Api";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 const SocialLogin = () => {
 
@@ -14,11 +13,12 @@ const SocialLogin = () => {
         const split = s.split("=");
         queryParams[split[0]] = split[1]
       });
-    const api = apiFor(Apis.Auth.OauthLogin);
-    api.get({
+    apiFor(Apis.Auth.OauthLogin).get({
       id: `${slug}?code=${queryParams.code}&redirect=${encodeURIComponent(window.location.origin + window.location.pathname)}`
     }).then(() => {
-      window.close()
+      window.close();
+    }).catch(()=>{
+      window.close();
     })
   }, []);
 
