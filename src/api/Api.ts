@@ -7,7 +7,7 @@ import { EventBus } from "../lib/bus/EventBus";
 const eventBus = new EventBus();
 
 export const serviceRegistry: { [key: string]: string } = {
-  auth: window._env_.AUTH_SERVER_URL || 'https://auth-server.serveo.net',
+  auth: window._env_.AUTH_SERVER_URL || 'https://auth-server.local.mooglest.com',
 };
 
 export enum Service {

@@ -9,7 +9,6 @@ import RolePage from "./pages/RolePage";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Box, Container, Stack } from "@mui/material";
 import { SnackbarProvider } from "notistack";
-import OauthPage from "./pages/OauthPage";
 import OauthsPage from "./pages/OauthsPage";
 import SocialLogin from "./components/SocialLogin";
 
@@ -17,6 +16,10 @@ declare global {
   interface Window {
     ApplePaySession: any
     _env_: { AUTH_SERVER_URL: string }
+  }
+
+  interface Array<T> {
+    unique(key: (t: T) => string): T[];
   }
 }
 
@@ -30,7 +33,11 @@ const App = () => {
         <Stack spacing={"1em"}>
           <HashRouter>
             <MainNavigation routes={[
-              { path: "/users", description: "Users" },
+              {
+                path: "/users",
+                description: "Users",
+                children: [ { path: "/a", description: "A" }, { path: "/b", description: "B" } ]
+              },
               { path: "/roles", description: "Roles" },
               { path: "/oauths", description: "Oauth" },
             ]}/>
@@ -43,7 +50,6 @@ const App = () => {
                   <Route path={"/roles"} element={<RolesPage/>}/>
                   <Route path={"/roles/:id"} element={<RolePage/>}/>
                   <Route path={"/oauths"} element={<OauthsPage/>}/>
-                  <Route path={"/oauths/:id"} element={<OauthPage/>}/>
                   <Route path="*" element={<Navigate to="/users" replace/>}/>
                 </Routes>
               </Container>

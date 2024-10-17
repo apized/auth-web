@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ApizedListPage from "../components/ApizedListPage";
 import { AuthRole, AuthUser } from "../api/models/Auth";
 import { Apis } from "../api/Config";
-import { Box, Breadcrumbs, Dialog, DialogTitle, Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { SearchEntry } from "../components/search/Types";
 import { Operation } from "../api/Search";
 import UserForm from "../components/UserForm";
+import apiFor from "../api/Api";
 
 const UsersPage = () => {
   const navigate = useNavigate();
-
-  const [ open, setOpen ] = useState(false);
-
+  const tokenApi = apiFor(Apis.Auth.Me);
   const searchConfig: SearchEntry[] = [
     {
+      id: 'name',
       label: "Name",
       operations: [
         { label: "contains", value: Operation.Like },
@@ -32,6 +32,7 @@ const UsersPage = () => {
       }
     },
     {
+      id: 'username',
       label: "Username",
       operations: [
         { label: "contains", value: Operation.Like },
@@ -50,6 +51,7 @@ const UsersPage = () => {
 
     },
     {
+      id: 'role',
       label: "Role",
       operations: [
         { label: "is", value: Operation.Equals },
@@ -67,10 +69,17 @@ const UsersPage = () => {
 
   return (
     <Stack spacing={"1em"}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Typography color="text.primary">Users</Typography>
-      </Breadcrumbs>
       <ApizedListPage<AuthUser>
+        actions={[
+          {
+            display: 'Redeem', onClick: () => {
+              let jwt = window.prompt("JWT token", "")!;
+              tokenApi.get({ id: jwt }).then((u) => {
+                window.alert(JSON.stringify(u, null, 2));
+              });
+            }
+          }
+        ]}
         columns={[
           { label: 'Username', minWidth: 170, format: (value) => value.username },
           { label: 'Name', minWidth: 100, format: (value) => value.name },
@@ -81,21 +90,12 @@ const UsersPage = () => {
           },
         ]}
         fields={[ 'name', 'username', 'roles.name' ]}
+        form={UserForm}
         context={{}}
         query={Apis.Auth.User}
-        onCreate={() => setOpen(true)}
         onRowClick={(user) => navigate(`/users/${user.id}`)}
         searchConfig={searchConfig}
       />
-      <Dialog
-        fullWidth
-        open={open}
-      >
-        <DialogTitle>Create User</DialogTitle>
-        <Box sx={{ padding: '1em' }}>
-          <UserForm isModal={true} onClose={() => setOpen(false)}/>
-        </Box>
-      </Dialog>
     </Stack>
   );
 };

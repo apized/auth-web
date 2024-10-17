@@ -1,4 +1,4 @@
-import { Button, Stack, TextField } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import React from "react";
 import apiFor, { ApiError } from "../api/Api";
 import { Apis } from "../api/Config";
@@ -6,37 +6,36 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSnackbar } from "notistack";
 import { AuthRole } from "../api/models/Auth";
+import FormikField from "./FormikField";
+import { ApizedFormProps } from "./ApizedListPage";
 
 const RoleForm = (
   {
     isModal,
     onClose = () => null,
-    role
-  }: {
-    isModal?: boolean;
-    onClose?: () => void;
-    role?: AuthRole;
-  }
+    selected
+  }: ApizedFormProps<AuthRole>
 ) => {
   const { enqueueSnackbar } = useSnackbar();
   const roleApi = apiFor(Apis.Auth.Role, {});
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      id: role?.id || undefined,
-      description: role?.description,
-      name: role?.name,
+      id: selected?.id || undefined,
+      name: selected?.name,
+      description: selected?.description,
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required().max(255),
-      description: Yup.string().required().max(1024),
+      name: Yup.string().required().min(2).max(255),
+      description: Yup.string().required().min(2).max(1024),
     }),
     onSubmit: (values) => {
-      if (role) {
+      if (selected) {
         roleApi.update({
-          id: role.id!,
+          id: selected.id!,
           obj: values,
         }).then((u) => {
-          onClose();
+          onClose(u);
           enqueueSnackbar(`Role '${u.name}' updated!`, { variant: "success" });
         }).catch((e: ApiError) => {
           e.errors.map(error => enqueueSnackbar(error.message, { variant: "error" }))
@@ -45,7 +44,7 @@ const RoleForm = (
         roleApi.create({
           obj: values,
         }).then((u) => {
-          onClose();
+          onClose(u);
           enqueueSnackbar(`Role '${u.name}' created!`, { variant: "success" });
         }).catch((e: ApiError) => {
           e.errors.map(error => enqueueSnackbar(error.message, { variant: "error" }))
@@ -57,35 +56,11 @@ const RoleForm = (
   return (
     <form onSubmit={formik.handleSubmit}>
       <Stack spacing={"1em"} bottom={"1em"}>
-        <TextField
-          fullWidth
-          label="Name"
-          name="name"
-          type="text"
-          autoComplete={"none"}
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
-        />
-        <TextField
-          fullWidth
-          multiline
-          minRows={3}
-          label="Description"
-          name="description"
-          type="text"
-          autoComplete={"none"}
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.description && Boolean(formik.errors.description)}
-          helperText={formik.touched.description && formik.errors.description}
-        />
+        <FormikField formik={formik} label={"Name"} field={"name"} type={"text"}/>
+        <FormikField required multiline formik={formik} label={"Description"} field={"description"} type={"text"}/>
         <Stack direction={"row"} spacing={"1em"} justifyContent={"right"}>
-          {isModal && (<Button variant={"outlined"} onClick={onClose}>Cancel</Button>)}
-          <Button variant={"contained"} onClick={formik.submitForm}>{role ? 'Update' : 'Create'}</Button>
+          {isModal && (<Button variant={"outlined"} onClick={() => onClose()}>Cancel</Button>)}
+          <Button variant={"contained"} onClick={formik.submitForm}>{selected ? 'Update' : 'Create'}</Button>
         </Stack>
       </Stack>
     </form>

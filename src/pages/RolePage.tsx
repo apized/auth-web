@@ -51,7 +51,7 @@ const RolePage = () => {
       {!loading && role && (
         <>
           <BorderedSection title={"Details"}>
-            <RoleForm role={role}/>
+            <RoleForm selected={role}/>
           </BorderedSection>
           <BorderedSection title={"Permissions"}>
             <Stack direction={"row"} flexWrap={"wrap"}>

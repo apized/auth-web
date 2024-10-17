@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import React from "react";
 import apiFor, { ApiError } from "../api/Api";
 import { Apis } from "../api/Config";
@@ -7,29 +7,27 @@ import * as Yup from "yup";
 import { useSnackbar } from "notistack";
 import { AuthOauth, OauthProvider } from "../api/models/Auth";
 import { useNavigate } from "react-router-dom";
+import { ApizedFormProps } from "./ApizedListPage";
+import FormikField from "./FormikField";
 
 const OauthForm = (
   {
     isModal,
     onClose = () => null,
-    oauth
-  }: {
-    isModal?: boolean;
-    onClose?: () => void;
-    oauth?: AuthOauth;
-  }
-) => {
+    selected
+  }: ApizedFormProps<AuthOauth>) => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const oauthApi = apiFor(Apis.Auth.Oauth, {});
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      id: oauth?.id || undefined,
-      name: oauth?.name || '',
-      slug: oauth?.slug || '',
-      provider: oauth?.provider || OauthProvider.Google,
-      clientId: oauth?.clientId || '',
-      clientSecret: oauth?.clientSecret,
+      id: selected?.id || undefined,
+      name: selected?.name || '',
+      slug: selected?.slug || '',
+      provider: selected?.provider || '',
+      clientId: selected?.clientId || '',
+      clientSecret: selected?.clientSecret || '',
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required(),
@@ -38,12 +36,12 @@ const OauthForm = (
       clientSecret: Yup.string().required(),
     }),
     onSubmit: (values) => {
-      if (oauth) {
+      if (selected) {
         oauthApi.update({
-          id: oauth.id!,
-          obj: values,
+          id: selected.id!,
+          obj: values as AuthOauth,
         }).then((u) => {
-          onClose();
+          onClose(u);
           enqueueSnackbar(`Oauth '${u.name}' updated!`, { variant: "success" });
           navigate('/oauths');
         }).catch((e: ApiError) => {
@@ -51,9 +49,9 @@ const OauthForm = (
         })
       } else {
         oauthApi.create({
-          obj: values,
+          obj: values as AuthOauth,
         }).then((u) => {
-          onClose();
+          onClose(u);
           enqueueSnackbar(`Oauth '${u.name}' created!`, { variant: "success" });
         }).catch((e: ApiError) => {
           e.errors.map(error => enqueueSnackbar(error.message, { variant: "error" }))
@@ -65,75 +63,31 @@ const OauthForm = (
   return (
     <form onSubmit={formik.handleSubmit}>
       <Stack spacing={"1em"} bottom={"1em"}>
-        <TextField
-          fullWidth
+        <FormikField required formik={formik} label={"Name"} field={"name"} type={"text"}/>
+        <FormikField required formik={formik} label={"Slug"} field={"slug"} type={"text"}/>
+        <FormikField
           required
-          label="Name"
-          name="name"
-          type="text"
-          autoComplete={oauth ? "none" : "name"}
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          formik={formik}
+          label={"Provider"}
+          field={"provider"}
+          type={"select"}
+          options={Object.keys(OauthProvider).map((p) => (
+            { label: p, value: p }
+          ))}
         />
-        <TextField
-          fullWidth
-          required
-          label="Slug"
-          name="slug"
-          type="text"
-          value={formik.values.slug}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.slug && Boolean(formik.errors.slug)}
-          helperText={formik.touched.slug && formik.errors.slug}
-        />
-        <FormControl>
-          <InputLabel id="provider">Provider</InputLabel>
-          <Select
-            labelId="provider"
-            label="Provider"
-            name="provider"
-            value={formik.values.provider}
-            onChange={formik.handleChange}
-            MenuProps={{ style: { zIndex: 9999999 } }}
-          >
-            {Object.keys(OauthProvider).map((p) => (
-              <MenuItem key={p} value={p}>{p}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          fullWidth
-          required
-          label="Client ID"
-          name="clientId"
-          type="text"
-          value={formik.values.clientId}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.clientId && Boolean(formik.errors.clientId)}
-          helperText={formik.touched.clientId && formik.errors.clientId}
-        />
-        <TextField
-          fullWidth
+        <FormikField required formik={formik} label={"Client ID"} field={"clientId"} type={"text"}/>
+        <FormikField
           required
           multiline={formik.values.provider === OauthProvider.Apple}
-          minRows={formik.values.provider === OauthProvider.Apple ? 3 : 1}
+          formik={formik}
           label={formik.values.provider === OauthProvider.Apple ? "Private Key" : "Client Secret"}
-          name="clientSecret"
-          type="text"
-          value={formik.values.clientSecret}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.clientSecret && Boolean(formik.errors.clientSecret)}
-          helperText={formik.touched.clientSecret && formik.errors.clientSecret}
+          field={"clientSecret"}
+          type={"text"}
+          minRows={formik.values.provider === OauthProvider.Apple ? 3 : 1}
         />
         <Stack direction={"row"} spacing={"1em"} justifyContent={"right"}>
-          {isModal && (<Button variant={"outlined"} onClick={onClose}>Cancel</Button>)}
-          <Button variant={"contained"} onClick={formik.submitForm}>{oauth ? 'Update' : 'Create'}</Button>
+          {isModal && (<Button variant={"outlined"} onClick={() => onClose()}>Cancel</Button>)}
+          <Button variant={"contained"} onClick={formik.submitForm}>{selected ? 'Update' : 'Create'}</Button>
         </Stack>
       </Stack>
     </form>

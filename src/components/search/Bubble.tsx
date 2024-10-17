@@ -2,7 +2,7 @@
 import React from 'react';
 
 import BubbleField from './BubbleField';
-import { AsyncSearchValues, AutocompleteOption, SearchEntry } from "./Types";
+import { AsyncSearchValues, AutocompleteFunction, AutocompleteOption, SearchEntry } from "./Types";
 import { Operation, SearchTerm } from "../../api/Search";
 import { IconButton, Stack } from "@mui/material";
 import { Delete } from "@mui/icons-material";
@@ -23,8 +23,10 @@ const Bubble = ({
   setSearch: (search: SearchTerm[]) => void;
   term: SearchTerm;
 }) => {
-  const entry = config.find((o) => o.value === term.field);
-  const fieldOptions = config;
+  const entry = config.find((o) => o.id === term.id)
+    || config.find((o) => o.label === term.display)
+    || config.find((o) => o.value === term.field)
+  const fieldOptions = config.map(e => ({ id: e.id, label: e.label, value: e.id, field: e.value }));
 
   const operationOptions = entry?.operations || [];
 
@@ -41,9 +43,15 @@ const Bubble = ({
         <BubbleField
           className="field"
           options={fieldOptions}
-          onChange={(option) =>
-            onChange({ ...term, field: option.value || '' })
-          }
+          onChange={(option) => {
+            onChange({
+              ...term,
+              id: fieldOptions.find((o) => o.value === option.value)?.id,
+              field: fieldOptions.find((o) => o.value === option.value)?.field || '',
+              display: option.label
+            })
+          }}
+          value={term.id}
         />
         <BubbleField
           className="operation"
@@ -51,21 +59,25 @@ const Bubble = ({
           onChange={(option) =>
             onChange({ ...term, op: option.value as Operation })
           }
+          value={term.op}
         />
         {(entry?.values as AsyncSearchValues)?.query
           ? <AsyncBubbleField
             className="value"
             options={entry?.values as AsyncSearchValues}
             onChange={(option) =>
-              onChange({ ...term, display: option.label, value: option.value })
+              onChange({ ...term, value: option.value })
             }
+            term={term}
+            value={term.value}
           />
           : <BubbleField
             className="value"
-            options={entry?.values as AutocompleteOption[]}
-            onChange={(option) =>
-              onChange({ ...term, display: option.label, value: option.value })
-            }
+            options={entry?.values as AutocompleteOption[] | AutocompleteFunction}
+            onChange={(option) => {
+              onChange({ ...term, value: option.value })
+            }}
+            value={term.value}
           />
         }
         <IconButton onClick={() => {

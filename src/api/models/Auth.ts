@@ -19,6 +19,10 @@ type Permissionable = {
 export type AuthUser = Permissionable & {
   name?: string;
   username?: string;
+  password?: string;
+  verified?: boolean;
+  emailVerificationCode?: string;
+  passwordResetCode?: string;
   roles?: AuthRole[] | string[];
 } & Model;
 

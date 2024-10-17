@@ -14,13 +14,12 @@ import { useSnackbar } from "notistack";
 const RolesPage = () => {
   const navigate = useNavigate();
   const snackbar = useSnackbar();
-
-  const [ open, setOpen ] = useState(false);
-
   const roleApi = apiFor(Apis.Auth.Role, {});
+  const [ refetchTriger, setRefreshTrigger ] = React.useState(new Date().getTime());
 
   const searchConfig: SearchEntry[] = [
     {
+      id: 'name',
       label: "Name",
       operations: [
         { label: "contains", value: Operation.Like },
@@ -41,9 +40,6 @@ const RolesPage = () => {
 
   return (
     <Stack spacing={"1em"}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Typography color="text.primary">Roles</Typography>
-      </Breadcrumbs>
       <ApizedListPage<AuthRole>
         columns={[
           { label: 'Name', minWidth: 170, format: (value) => value.name },
@@ -58,7 +54,7 @@ const RolesPage = () => {
                 roleApi.remove({ id: role.id! })
                   .then(() => {
                     snackbar.enqueueSnackbar(`Role ${role.name} deleted.`, { variant: "success" })
-                    //todo setRefresh(new Date().getTime())
+                    setRefreshTrigger(new Date().getTime())
                   })
                   .catch((e: ApiError) => {
                     e.errors.map((error) => snackbar.enqueueSnackbar(error.message, { variant: "error" }))
@@ -71,18 +67,11 @@ const RolesPage = () => {
         ]}
         context={{}}
         query={Apis.Auth.Role}
-        onCreate={() => setOpen(true)}
+        form={RoleForm}
         onRowClick={(user) => navigate(`/roles/${user.id}`)}
-        searchConfig={searchConfig}/>
-      <Dialog
-        fullWidth
-        open={open}
-      >
-        <DialogTitle>Create User</DialogTitle>
-        <Box sx={{ padding: '1em' }}>
-          <RoleForm isModal={true} onClose={() => setOpen(false)}/>
-        </Box>
-      </Dialog>
+        searchConfig={searchConfig}
+        refetchTrigger={refetchTriger}
+      />
     </Stack>);
 };
 

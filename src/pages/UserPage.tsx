@@ -8,8 +8,9 @@ import UserForm from "../components/UserForm";
 import { GreenBadge, GreyBadge } from "../atoms/Badge";
 import BorderedSection from "../atoms/BorderedSection";
 import { IosShare } from "@mui/icons-material";
-import apiFor, { ApiError, serviceRegistry } from "../api/Api";
+import apiFor, { ApiError, Service, serviceRegistry } from "../api/Api";
 import { useSnackbar } from "notistack";
+import ApizedAudit from "../components/audit/ApizedAudit";
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -95,16 +96,19 @@ const UserPage = () => {
 
   return (
     <Stack spacing={"1em"}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="#/users">
-          Users
-        </Link>
-        <Typography color="text.primary">User <b>{user?.username}</b></Typography>
-      </Breadcrumbs>
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link underline="hover" color="inherit" href="#/users">
+            Users
+          </Link>
+          <Typography color="text.primary">User <b>{user?.username}</b></Typography>
+        </Breadcrumbs>
+        <ApizedAudit service={Service.Auth} entity={"users"} target={user?.id}/>
+      </Stack>
       {!loading && user && (
         <>
           <BorderedSection title={"Details"}>
-            <UserForm user={user}/>
+            <UserForm selected={user}/>
           </BorderedSection>
           <BorderedSection title={"Permissions"}>
             <Stack direction={"row"} flexWrap={"wrap"}>
@@ -163,18 +167,21 @@ const UserPage = () => {
               ))}
             </Stack>
           </BorderedSection>
-          <BorderedSection title={"Generate Tokens"}>
+          <BorderedSection title={"Actions"}>
             <Stack direction={"row"} spacing={"1em"} justifyContent={"center"}>
+              <Button variant={"contained"} onClick={() => {
+                alert("Not implemented yet")
+              }}>Reset Password</Button>
               <Button variant={"contained"} onClick={() =>
                 expiringTokenApi.create({ obj: {} }).then((token) => {
                   window.prompt("Token", token.jwt);
                 })
-              }>Expiring</Button>
+              }>Token</Button>
               <Button variant={"contained"} onClick={() =>
                 nonExpiringtokenApi.create({ obj: {}, }).then((token) => {
                   window.prompt("Token", token.jwt);
                 })
-              }>Non-Expiring</Button>
+              }>Non-Expiring Token</Button>
             </Stack>
           </BorderedSection>
         </>

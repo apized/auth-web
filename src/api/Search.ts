@@ -9,6 +9,7 @@ export enum Operation {
 }
 
 export type SearchTerm = {
+  id?: string;
   display?: string;
   field?: string;
   op?: Operation;

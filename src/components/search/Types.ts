@@ -1,15 +1,18 @@
-import { Operation } from "../../api/Search";
+import { Operation, SearchTerm } from "../../api/Search";
 import { Model } from "../../api/models/Base";
 import { ApizedContext, ApizedDefinition } from "../../api/Api";
 
+export type AutocompleteFunction = (text?: string) => AutocompleteOption[];
+
 export type SearchEntry = {
+  id: string;
   label: string;
   operations: { label: string; value: Operation }[];
   value: string;
   values?:
     | AutocompleteOption[]
     | AsyncSearchValues
-    | ((text: string) => AutocompleteOption[]);
+    | AutocompleteFunction;
 };
 
 export enum Section {
@@ -34,13 +37,19 @@ export type SearchLocation = {
 export type ApizedAsyncQuery = {
   context: ApizedContext;
   definition: ApizedDefinition<Model>;
-  search?: SearchEntry[];
+  search?: SearchTerm[];
 }
 
 export type AsyncSearchValues = {
-  // create?: boolean;
+  create?: boolean;
+  extra?: (term: SearchTerm, input: string) => AutocompleteOption[];
   label?: string;
+  fields?: string[];
   query: ApizedAsyncQuery;
-  // transform?: (value: unknown) => unknown;
+  transform?: (value: unknown) => unknown;
+  // transform?: {
+  //   forward: (value: unknown) => unknown;
+  //   reverse: (value: unknown) => unknown;
+  // }
   value?: string;
 };

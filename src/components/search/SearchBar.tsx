@@ -4,16 +4,21 @@ import { SearchTerm } from "../../api/Search";
 import { SearchEntry, SearchLocation, Section } from "./Types";
 import { Box, IconButton, Stack } from "@mui/material";
 import Bubble from "./Bubble";
-import { Add } from "@mui/icons-material";
+import { Add, Refresh } from "@mui/icons-material";
+import Loader from "../../atoms/Loader";
 
 const SearchBar = ({
   config,
   search,
   setSearch,
+  refresh,
+  loading = false
 }: {
   config: SearchEntry[];
   search: SearchTerm[];
   setSearch: (search: SearchTerm[]) => void;
+  refresh?: () => void;
+  loading?: boolean;
 }) => {
   const searchRef = useRef<HTMLDivElement>(null);
   const [ location, setLocation ] = useState<SearchLocation>({
@@ -21,8 +26,8 @@ const SearchBar = ({
     section: Section.Field,
   });
 
-  const onChange = (term: SearchTerm) => {
-    setSearch(search.map((t, idx) => (idx === location.bubble ? term : t)));
+  const onChange = (idx: number, term: SearchTerm) => {
+    setSearch(search.map((t, i) => (i === idx ? term : t)));
     setLocation({
       bubble: location.bubble,
       section: (location.section + 1) as Section,
@@ -32,30 +37,41 @@ const SearchBar = ({
   return (
     <Stack
       width={'100%'}
-      flexWrap={"wrap"}
       style={{ border: '1px solid black' }}
       direction={"row"}
       spacing={"1em"}
       padding={"0.5em"}
-      ref={searchRef}
-      // onClick={activate}
-      borderRadius={1}
       alignItems={"center"}
+      justifyContent={"space-between"}
     >
-      {search.map((term, idx) => (
-        <Bubble
-          key={`term-${idx}`}
-          config={config}
-          index={idx}
-          search={search}
-          setSearch={setSearch}
-          term={term}
-          onChange={onChange}
-        />
-      ))}
-      <Box>
-        <IconButton onClick={() => setSearch(search.concat([ {} ]))}><Add/></IconButton>
-      </Box>
+      <Stack
+        flexWrap={"wrap"}
+        direction={"row"}
+        spacing={"1em"}
+
+        ref={searchRef}
+        // onClick={activate}
+        borderRadius={1}
+        alignItems={"center"}
+      >
+        {search.map((term, idx) => (
+          <Bubble
+            key={`term-${idx}`}
+            config={config}
+            index={idx}
+            search={search}
+            setSearch={setSearch}
+            term={term}
+            onChange={(t) => onChange(idx, t)}
+          />
+        ))}
+        <Box>
+          <IconButton onClick={() => setSearch(search.concat([ {} ]))}><Add/></IconButton>
+        </Box>
+      </Stack>
+      {!!refresh && <Box>
+        <IconButton onClick={refresh} disabled={loading}>{loading ? <Loader/> : <Refresh/>}</IconButton>
+      </Box>}
     </Stack>
   );
 };
