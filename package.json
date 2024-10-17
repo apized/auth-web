@@ -1,6 +1,6 @@
 {
   "name": "auth-web",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -41,7 +41,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "patch": "release patch --skip-questions --publish --show-url",
-    "minor": "release minor --skip-questions --publish --show-url" ,
+    "minor": "release minor --skip-questions --publish --show-url",
     "major": "release major --skip-questions --publish --show-url"
   },
   "eslintConfig": {
