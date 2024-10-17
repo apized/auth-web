@@ -33,16 +33,16 @@
     "yup": "1.2.0"
   },
   "devDependencies": {
-    "release-it": "17.1.1"
+    "release": "6.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "patch": "release-it patch --ci",
-    "minor": "release-it minor --ci",
-    "major": "release-it major --ci"
+    "patch": "release patch",
+    "minor": "release minor",
+    "major": "release major"
   },
   "eslintConfig": {
     "extends": [
