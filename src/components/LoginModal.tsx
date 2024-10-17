@@ -56,16 +56,14 @@ const LoginModal = ({
                       key={o.id}
                       variant={"contained"}
                       onClick={() => {
-                        const redirect = o.provider === OauthProvider.Apple
-                          ? `${serviceRegistry.auth}/tokens/oauth/apple`
-                          : `https://${window.location.hostname}/auth/login/${o.slug}`
+                        const redirect = `${serviceRegistry.auth}/tokens/oauth/${o.slug}`
                         if (o.provider === OauthProvider.Apple && window.ApplePaySession) {
                           window.location.href = `${o.loginUrl}&redirect_uri=${redirect}`;
                         } else {
                           const win = window.open(
                             `${o.loginUrl}&redirect_uri=${redirect}`,
                             '_system',
-                            'resizable=yes; status=no; scroll=no; help=no; center=yes; width=800; height=600; menubar=no; directories=no; location=no; modal=yes;',
+                            'resizable=no; status=no; scroll=no; help=no; center=yes; width=800; height=600; menubar=no; directories=no; location=no; modal=yes;',
                           );
                           const timer = setInterval(() => {
                             if (!win || win.closed) {
@@ -111,10 +109,12 @@ const LoginModal = ({
                              justifyContent="left"
                              alignItems="baseline"
                              spacing={2}>
-                        <Button variant={"contained"} disabled={!formik.isValid} type="submit" sx={{fontSize:"0.75em"}}>
+                        <Button variant={"contained"} disabled={!formik.isValid} type="submit"
+                                sx={{ fontSize: "0.75em" }}>
                           Login
                         </Button>
-                        <Button variant={"outlined"} disabled={!formik.isValid} sx={{fontSize:"0.75em"}}>Register</Button>
+                        <Button variant={"outlined"} disabled={!formik.isValid}
+                                sx={{ fontSize: "0.75em" }}>Register</Button>
                         <div style={{ textAlign: 'right' }}>
                           <Button variant={"text"} style={{ fontSize: '0.5em' }} type="button">
                             forgot password?

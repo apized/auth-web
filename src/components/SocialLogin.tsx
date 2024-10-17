@@ -14,7 +14,7 @@ const SocialLogin = () => {
         queryParams[split[0]] = split[1]
       });
     apiFor(Apis.Auth.OauthLogin).get({
-      id: `${slug}?code=${queryParams.code}&redirect=${encodeURIComponent(window.location.origin + window.location.pathname)}`
+      id: `${slug}?code=${queryParams.code}`
     }).then(() => {
       window.close();
     }).catch(()=>{
