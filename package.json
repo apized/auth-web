@@ -40,9 +40,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "patch": "release patch",
-    "minor": "release minor",
-    "major": "release major"
+    "patch": "release patch --ci",
+    "minor": "release minor --ci",
+    "major": "release major --ci"
   },
   "eslintConfig": {
     "extends": [
