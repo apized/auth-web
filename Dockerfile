@@ -1,5 +1,5 @@
 FROM node:alpine AS builder
-ENV NODE_ENV production
+ENV NODE_ENV=production
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
