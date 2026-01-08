@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ApizedListPage from "../components/ApizedListPage";
 import { AuthOauth } from "../api/models/Auth";
 import { Apis } from "../api/Config";
-import { Box, Breadcrumbs, Dialog, DialogTitle, IconButton, Stack, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { IconButton, Stack } from "@mui/material";
 import { SearchEntry } from "../components/search/Types";
 import { Operation } from "../api/Search";
 import OauthForm from "../components/OauthForm";
