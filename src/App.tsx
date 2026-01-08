@@ -23,6 +23,12 @@ declare global {
   }
 }
 
+if (Array.prototype.unique === undefined) {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Array.prototype, 'unique', {
+    value: () => [ ...new Set(this) ]
+  });
+}
 
 const App = () => {
   const isModal = window.location.pathname.startsWith('/auth/login/');
