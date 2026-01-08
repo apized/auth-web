@@ -26,7 +26,11 @@ declare global {
 if (Array.prototype.unique === undefined) {
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(Array.prototype, 'unique', {
-    value: () => [ ...new Set(this) ]
+    value: function (f: (t: unknown) => string) {
+      const seen = new Set();
+      this.forEach((item: unknown) => seen.add(f(item)));
+      return [ ...seen ];
+    }
   });
 }
 
