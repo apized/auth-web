@@ -7,6 +7,8 @@ import { Apis } from "../api/Config";
 import { useEventBus } from "../lib/bus/EventBus";
 import { useApiList } from "../api/ApiHooks";
 import { OauthProvider } from "../api/models/Auth";
+import { authenticateWithPasskey, isPasskeySupported } from '../api/Passkeys';
+import { useSnackbar } from 'notistack';
 
 export type ApizedModalProps = Pick<ModalProps, 'open' | 'onClose'>;
 
@@ -15,6 +17,7 @@ const LoginModal = ({
   onClose,
 }: ApizedModalProps) => {
   const eventBus = useEventBus();
+  const { enqueueSnackbar } = useSnackbar();
   const [ value, setValue ] = React.useState(0);
 
   const { data: oauthPage, loading } = useApiList(Apis.Auth.Oauth, {}, {});
@@ -38,6 +41,15 @@ const LoginModal = ({
     },
   });
 
+  const loginWithPasskey = async () => {
+    try {
+      await authenticateWithPasskey();
+      eventBus.dispatch('login-success');
+    } catch (error) {
+      enqueueSnackbar(error instanceof Error ? error.message : 'Unable to sign in with a passkey', { variant: 'error' });
+    }
+  };
+
   return (
     <Dialog key="login" open={open} onClose={onClose}>
       {
@@ -47,6 +59,7 @@ const LoginModal = ({
             <Tabs variant={"fullWidth"} value={value} onChange={(_, v) => setValue(v)}>
               <Tab label="Social"/>
               <Tab label="Email / Password"/>
+              <Tab label="Passkey" disabled={!isPasskeySupported()}/>
             </Tabs>
             <Box sx={{ width: "22em" }}>
               {value === 0
@@ -78,7 +91,7 @@ const LoginModal = ({
                     </Button>
                   ))}
                 </Stack>
-                : <Stack padding={"1em"}>
+                : value === 1 ? <Stack padding={"1em"}>
                   <form onSubmit={formik.handleSubmit}>
                     <Stack spacing={"1em"} bottom={"1em"}>
                       <TextField
@@ -123,6 +136,9 @@ const LoginModal = ({
                       </Stack>
                     </Stack>
                   </form>
+                </Stack>
+                : <Stack padding={"1em"} spacing={"1em"}>
+                  <Button variant="contained" onClick={loginWithPasskey}>Sign in with a passkey</Button>
                 </Stack>
               }
             </Box>

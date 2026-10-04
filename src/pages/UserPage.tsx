@@ -11,9 +11,13 @@ import { IosShare } from "@mui/icons-material";
 import apiFor, { ApiError, Service, serviceRegistry } from "../api/Api";
 import { useSnackbar } from "notistack";
 import ApizedAudit from "../components/audit/ApizedAudit";
+import PasskeyManager from '../components/PasskeyManager';
+import ApiKeyManager from '../components/ApiKeyManager';
+import { useAuthContext } from '../context/UserContext';
 
 const UserPage = () => {
   const navigate = useNavigate();
+  const currentUser = useAuthContext();
   const snackbar = useSnackbar()
   const { id } = useParams<any>();
   const { data: user, loading: loadingUser, refetch } = useApiGet<AuthUser>(
@@ -34,7 +38,6 @@ const UserPage = () => {
   const loading = loadingUser || loadingRoles;
   const userApi = apiFor(Apis.Auth.User);
   const expiringTokenApi = apiFor(Apis.Auth.ExpiringToken, { user: { id } });
-  const nonExpiringtokenApi = apiFor(Apis.Auth.NonExpiringToken, { user: { id } });
 
   const addRole = (role: AuthRole) => {
     const roles = (user.roles! as string[]).concat(role.id!)
@@ -167,6 +170,12 @@ const UserPage = () => {
               ))}
             </Stack>
           </BorderedSection>
+          {currentUser?.id === user.id && <BorderedSection title={"Passkeys"}>
+            <PasskeyManager/>
+          </BorderedSection>}
+          {currentUser?.id === user.id && <BorderedSection title={"API Keys"}>
+            <ApiKeyManager/>
+          </BorderedSection>}
           <BorderedSection title={"Actions"}>
             <Stack direction={"row"} spacing={"1em"} justifyContent={"center"}>
               <Button variant={"contained"} onClick={() => {
@@ -177,11 +186,6 @@ const UserPage = () => {
                   window.prompt("Token", token.jwt);
                 })
               }>Token</Button>
-              <Button variant={"contained"} onClick={() =>
-                nonExpiringtokenApi.create({ obj: {}, }).then((token) => {
-                  window.prompt("Token", token.jwt);
-                })
-              }>Non-Expiring Token</Button>
             </Stack>
           </BorderedSection>
         </>

@@ -16,12 +16,8 @@ export const Apis = {
       path: '/users',
       service: Service.Auth,
     } as ApizedDefinition<AuthUser>,
-    NonExpiringToken: {
-      path: '/tokens/[user]?expiring=false',
-      service: Service.Auth,
-    } as ApizedDefinition<AuthToken>,
     ExpiringToken: {
-      path: '/tokens/[user]?expiring=true',
+      path: '/tokens/[user]',
       service: Service.Auth,
     } as ApizedDefinition<AuthToken>,
     Role: {
