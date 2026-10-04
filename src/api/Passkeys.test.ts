@@ -1,4 +1,4 @@
-import { __test__ } from './Passkeys';
+import { __test__, authenticateWithPasskey } from './Passkeys';
 
 test('base64url values round-trip to and from WebAuthn bytes', () => {
   const bytes = new Uint8Array([ 0, 1, 2, 250, 251, 252 ]);
@@ -18,4 +18,27 @@ test('decodes WebAuthn options only for binary challenge and credential IDs', ()
   expect(Array.from(result.user.id)).toEqual([ 4, 5, 6 ]);
   expect(Array.from(result.allowCredentials[0].id)).toEqual([ 7, 8, 9 ]);
   expect(result.timeout).toBe(30000);
+});
+
+test('requests a discoverable authentication challenge with an empty JSON body', async () => {
+  const fetchMock = jest.fn().mockResolvedValue({
+    ok: false,
+    json: async () => ({ message: 'test challenge rejected' }),
+  });
+  const originalFetch = global.fetch;
+  global.fetch = fetchMock;
+  try {
+    await expect(authenticateWithPasskey()).rejects.toThrow('test challenge rejected');
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/passkeys/challenges/authentication'),
+      expect.objectContaining({
+        body: '{}',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        method: 'POST',
+      }),
+    );
+  } finally {
+    global.fetch = originalFetch;
+  }
 });

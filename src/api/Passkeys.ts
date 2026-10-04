@@ -111,7 +111,7 @@ export const isPasskeySupported = (): boolean => {
 
 export const authenticateWithPasskey = async (username?: string): Promise<void> => {
   const challenge = await request<ChallengeResponse<PublicKeyOptions>>(
-    '/passkeys/challenges/authentication', 'POST', username ? { username } : undefined,
+    '/passkeys/challenges/authentication', 'POST', username ? { username } : {},
   );
   const credential = await navigator.credentials.get({
     publicKey: decodeOptions(challenge.options) as PublicKeyCredentialRequestOptions,
