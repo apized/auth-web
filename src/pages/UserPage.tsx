@@ -38,6 +38,7 @@ const UserPage = () => {
   const loading = loadingUser || loadingRoles;
   const userApi = apiFor(Apis.Auth.User);
   const expiringTokenApi = apiFor(Apis.Auth.ExpiringToken, { user: { id } });
+  const canCreateToken = currentUser?.id === user?.id || currentUser?.isAllowed('*');
 
   const addRole = (role: AuthRole) => {
     const roles = (user.roles! as string[]).concat(role.id!)
@@ -181,11 +182,11 @@ const UserPage = () => {
               <Button variant={"contained"} onClick={() => {
                 alert("Not implemented yet")
               }}>Reset Password</Button>
-              <Button variant={"contained"} onClick={() =>
+              {canCreateToken && <Button variant={"contained"} onClick={() =>
                 expiringTokenApi.create({ obj: {} }).then((token) => {
                   window.prompt("Token", token.jwt);
                 })
-              }>Token</Button>
+              }>Token</Button>}
             </Stack>
           </BorderedSection>
         </>
