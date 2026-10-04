@@ -1,14 +1,9 @@
-import { serviceRegistry } from './Api';
+import { Page, serviceRegistry } from './Api';
 import { Model } from './models/Base';
 
-export type ApiKey = {
-  name: string;
-  permissions: string[];
-  expiresAt?: string;
-  revokedAt?: string;
-} & Model;
+export type ApiKey = { name: string } & Model;
 
-export type CreatedApiKey = { id: string; name: string; key: string } & Model;
+export type CreatedApiKey = ApiKey & { key: string };
 
 const request = async <T>(path: string, method: 'GET' | 'POST' | 'DELETE', body?: unknown): Promise<T> => {
   const response = await fetch(`${serviceRegistry.auth}${path}`, {
@@ -26,10 +21,8 @@ const request = async <T>(path: string, method: 'GET' | 'POST' | 'DELETE', body?
   return payload as T;
 };
 
-export const listApiKeys = (): Promise<ApiKey[]> => request('/api-keys', 'GET');
+export const listApiKeys = (): Promise<Page<ApiKey>> => request('/apiKeys', 'GET');
 
-export const createApiKey = (name: string, permissions: string[]): Promise<CreatedApiKey> => {
-  return request('/api-keys', 'POST', { name, permissions });
-};
+export const createApiKey = (name: string): Promise<CreatedApiKey> => request('/apiKeys', 'POST', { name });
 
-export const revokeApiKey = (id: string): Promise<ApiKey> => request(`/api-keys/${id}`, 'DELETE');
+export const revokeApiKey = (id: string): Promise<ApiKey> => request(`/apiKeys/${id}`, 'DELETE');

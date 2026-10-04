@@ -11,13 +11,12 @@ const ApiKeyManager = () => {
   const [ loading, setLoading ] = useState(true);
   const [ working, setWorking ] = useState(false);
   const [ name, setName ] = useState('');
-  const [ permissions, setPermissions ] = useState('');
   const [ createdKey, setCreatedKey ] = useState<string>();
 
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      setApiKeys(await listApiKeys());
+      setApiKeys((await listApiKeys()).content);
     } catch (error) {
       enqueueSnackbar(error instanceof Error ? error.message : 'Unable to load API keys', { variant: 'error' });
     } finally {
@@ -31,12 +30,10 @@ const ApiKeyManager = () => {
     if (!name.trim()) return;
     try {
       setWorking(true);
-      const apiKey = await createApiKey(name.trim(), permissions.split(',').map((permission) => permission.trim()).filter(Boolean));
-      const { key } = apiKey;
-      setApiKeys((current) => [ ...current, { id: apiKey.id, name: apiKey.name, permissions: [] } ]);
-      setCreatedKey(key);
+      const apiKey = await createApiKey(name.trim());
+      setApiKeys((current) => [ ...current, { id: apiKey.id, name: apiKey.name } ]);
+      setCreatedKey(apiKey.key);
       setName('');
-      setPermissions('');
     } catch (error) {
       enqueueSnackbar(error instanceof Error ? error.message : 'Unable to create API key', { variant: 'error' });
     } finally {
@@ -73,21 +70,17 @@ const ApiKeyManager = () => {
       <Typography variant="body2">API keys are shown only once when created. Store them securely.</Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing="1em">
         <TextField label="Name" value={name} onChange={(event) => setName(event.target.value)} disabled={working}/>
-        <TextField fullWidth label="Permissions (comma-separated)" value={permissions} onChange={(event) => setPermissions(event.target.value)} disabled={working}/>
         <Button variant="contained" disabled={working || !name.trim()} onClick={create}>Create API key</Button>
       </Stack>
       {loading ? <CircularProgress size="1.5em"/> : (
         <List dense disablePadding>
           {apiKeys.map((apiKey) => (
             <ListItem key={apiKey.id} secondaryAction={
-              <IconButton aria-label={`Revoke ${apiKey.name}`} disabled={working || Boolean(apiKey.revokedAt)} onClick={() => revoke(apiKey)}>
+              <IconButton aria-label={`Revoke ${apiKey.name}`} disabled={working} onClick={() => revoke(apiKey)}>
                 <DeleteIcon/>
               </IconButton>
             }>
-              <ListItemText
-                primary={apiKey.name}
-                secondary={apiKey.revokedAt ? 'Revoked' : apiKey.permissions.join(', ') || 'No permissions'}
-              />
+              <ListItemText primary={apiKey.name}/>
             </ListItem>
           ))}
           {!apiKeys.length && <Typography variant="body2">No API keys created.</Typography>}
