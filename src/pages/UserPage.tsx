@@ -174,7 +174,7 @@ const UserPage = () => {
           {currentUser?.id === user.id && <BorderedSection title={"Passkeys"}>
             <PasskeyManager/>
           </BorderedSection>}
-          {currentUser?.id === user.id && <BorderedSection title={"API Keys"}>
+          {canCreateToken && <BorderedSection title={"API Keys"}>
             <ApiKeyManager/>
           </BorderedSection>}
           <BorderedSection title={"Actions"}>
